@@ -11,28 +11,40 @@ $(document).on('click', '.btn', addGiphs);
 
 function addGiphs() {
 	let query = $(this).attr('data-name');
-	console.log(query);
 	let queryURL = 'https://api.giphy.com/v1/gifs/search?api_key=qntGR5Te1E7CLsmv81lfvDLbSeA2HiiO&q=' + query + '&limit=25&offset=0&rating=G&lang=en';
 	$.ajax({
 		url: queryURL,
 		method: 'GET'
 	}).then(function (response) {
 		let result = response.data;
-		console.log(result[0].images.fixed_height_still.url);
-		for (var i; i < result.length; i++) {
+		for (var i = 0; i < result.length; i++) {
+			console.log(result[i].images.fixed_height_still.url);
 			var div = $('<div class="gif">');
-			console.log(div);
 			var img = $('<img class="gif-image">');
 			var still = result[i].images.fixed_height_still.url;
 			var anim = result[i].images.fixed_height.url;
+			img.attr('data-still', still);
+			img.attr('data-anim', anim);
+			img.attr('data-state', 'static');
 			img.attr('src', still);
-			div.append(img);
+			div.prepend(img);
 			$('#gifs').prepend(div);
 		}
+
 
 	});
 
 }
+$(document).on('click', '.gif-image', function () {
+	if ($(this).attr('data-state') == 'animated') {
+		$(this).attr('data-state', 'static');
+		$(this).attr('src', $(this).attr('data-still'));
+
+	} else if ($(this).attr('data-state') == 'static') {
+		$(this).attr('data-state', 'animated');
+		$(this).attr('src', $(this).attr('data-anim'));
+	};
+})
 
 function renderButtons() {
 	$('#buttons').html('');
